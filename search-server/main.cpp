@@ -214,15 +214,23 @@ private:
             });
     }
 
-    vector<string> SplitIntoWordsNoStop(const string& text) const {
-        vector<string> words;
-        for (const string& word : SplitIntoWords(text)) {
-            if (!IsStopWord(word)) {
-                words.push_back(word);
-            }
-        }
-        return words;
-    }
+    vector<string> SplitIntoWordsNoStop(const string& text) const { 
+
+        vector<string> words; 
+
+        for (const string& word : SplitIntoWords(text)) { 
+
+            if (IsValidWord(word) && !IsStopWord(word)) { 
+
+                words.push_back(word); 
+
+            } 
+
+        } 
+
+        return words; 
+
+    } 
 
     static int ComputeAverageRating(const vector<int>& ratings) { 
     if (ratings.empty()) { 
