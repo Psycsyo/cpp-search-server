@@ -274,29 +274,35 @@ private:
         return result;
     }
 
-    template<typename DocumentPredicate>
-    vector<Document> FindAllDocuments(const Query& query, DocumentPredicate predicate) const {
-        map<int, double> document_to_relevance;
-        for (const string& word : query.plus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
-            }
-            for (const auto& [document_id, term_freq] : word_to_document_freqs_.at(word)) {
-                const DocumentData documents_data = documents_.at(document_id);
-                if (predicate(document_id, documents_data.status, documents_data.rating)) {
-                    const double IDF = log(GetDocumentCount() * 1.0 / word_to_document_freqs_.at(word).size());
-                    document_to_relevance[document_id] += IDF * term_freq;
-                }
-            }
-        }
-        for (const string& word : query.minus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
-            }
-            for (const auto& [document_id, term_freq] : word_to_document_freqs_.at(word)) {
-                document_to_relevance.erase(document_id);
-            }
-        }
+    template<typename DocumentPredicate> 
+vector<Document> FindAllDocuments(const Query& query, DocumentPredicate predicate) const { 
+    map<int, double> document_to_relevance; 
+    for (const string& word : query.plus_words) { 
+        if (word_to_document_freqs_.count(word) == 0) { 
+            continue; 
+        } 
+        for (const auto& [document_id, term_freq] : word_to_document_freqs_.at(word)) { 
+            const DocumentData documents_data = documents_.at(document_id); 
+            if(predicate(document_id, documents_data.status, documents_data.rating)) { 
+                const double IDF = CalculateIDF(word);
+                document_to_relevance[document_id] += IDF * term_freq; 
+            } 
+        } 
+    } 
+    for (const string& word : query.minus_words) { 
+        if (word_to_document_freqs_.count(word) == 0) { 
+            continue;  
+        } 
+        for (const auto& [document_id, term_freq] : word_to_document_freqs_.at(word)) {
+            document_to_relevance.erase(document_id); 
+        } 
+    } 
+    
+}
+
+double CalculateIDF(const string& word) const {
+    return log(GetDocumentCount() * 1.0 / word_to_document_freqs_.at(word).size());
+}
 
         vector<Document> matched_documents;
         for (const auto [document_id, relevance] : document_to_relevance) {
