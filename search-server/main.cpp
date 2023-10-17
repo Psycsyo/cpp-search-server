@@ -224,16 +224,14 @@ private:
         return words;
     }
 
-    static int ComputeAverageRating(const vector<int>& ratings) {
-        if (ratings.empty()) {
-            return 0;
-        }
-        int rating_sum = 0;
-        for (const auto rating : ratings) {
-            rating_sum += rating;
-        }
-        return rating_sum / static_cast<int>(ratings.size());
-    }
+    static int ComputeAverageRating(const vector<int>& ratings) { 
+    if (ratings.empty()) { 
+        return 0; 
+    } 
+    
+    int rating_sum = std::accumulate(ratings.begin(), ratings.end(), 0);
+    return rating_sum / static_cast<int>(ratings.size()); 
+}
 
     struct QueryWord {
         string data;
